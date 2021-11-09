@@ -118,7 +118,7 @@ const createScreenCapture = async (uri) => {
 // Create a function to initialize app
 async function init() {
     try {
-        let answers = await inq.prompt(questions);
+        const answers = await inq.prompt(questions);
         createScreenCapture(answers.uri);
         return await writeFile(await generateMarkdown(answers));
     } catch (err) {
