@@ -1,53 +1,81 @@
 // TODO: Create a function that returns a license badge based on which license is passed in
 // If there is no license, return an empty string
 function renderLicenseBadge(license) {
-  return 'badge';
+  return `![License Badge](https://img.shields.io/badge/license-${license.replace(' License','')}-green)`;
 }
 
 // TODO: Create a function that returns the license link
 // If there is no license, return an empty string
 function renderLicenseLink(license) {
-  return 'link';
+  const short = license.split(' ')[0];
+  let licenseLink;
+  if (short == 'MIT') licenseLink = 'https://mit-license.org/';
+  if (short == 'GPL') licenseLink = 'https://www.gnu.org/licenses/gpl-3.0.en.html';
+  if (short == 'Apache') licenseLink = 'https://www.apache.org/licenses/LICENSE-2.0.html';
+  if (short == 'BSD') licenseLink = 'https://opensource.org/licenses/BSD-3-Clause';
+  return licenseLink;
 }
 
-// TODO: Create a function that returns the license section of README
+// Create a function that returns the license section of README
 // If there is no license, return an empty string
 function renderLicenseSection(license) {
+  if (!license || license == 'None') return '';
   return `## License
-${renderLicenseBadge(license)} ${renderLicenseLink(license)}
+[${license}](${renderLicenseLink(license)})
+  `
+}
+
+function renderScreenShotSection(uri) {
+  if (!uri) return '';
+  return `### Screenshots
+[Live Deployed Link](${uri})
+### Mobile
+![screen shot from mobile browser](images/phone-page.png)
+### Browser
+![screen shot from pc browser](images/chrome-page.png)
   `
 }
 
 function renderToc(data) {
   let toc = '## Table of Contents\n';
-  if (data.install) toc += '[Installation](#installation)\n';
-  if (data.usage) toc += '[Usage](#usage)\n';
-  if (data.license) toc += '[License](#license)\n';
-  if (data.username) toc += '[Contributing](#contributing)\n';
-  if (data.tests) toc += '[Tests](#tests)\n';
-  if (data.questions) toc += '[Questions](#questions)\n';
+  if (data.install) toc += '1. [Installation](#installation)\n';
+  if (data.usage) toc += '1. [Usage](#usage)\n';
+  if (data.uri) toc += '   1. [Screenshot](#screenshot)\n'
+  if (data.license) toc += '1. [License](#license)\n';
+  if (data.username) toc += '1. [Contributing](#contributing)\n';
+  if (data.tests) toc += '1. [Tests](#tests)\n';
+  if (data.questions) toc += '1. [Questions](#questions)\n';
   return toc;
 }
 
 // TODO: Create a function to generate markdown for README
 function generateMarkdown(data) {
   return `# ${data.title}
+${renderLicenseBadge(data.license)}
+
 ${data.description}
 
-## Table of Contents
 ${renderToc(data)}
-
 
 ## Installation
 ${data.install}
 
 ## Usage
 ${data.usage}
+${renderScreenShotSection(data.uri)}
 
 ${renderLicenseSection(data.license)}
 
 ## Contributing
-${data.username}
+${data.guidelines}
+
+## Tests
+${data.test}
+
+## Questions
+[Link to Github](${data.username})
+
+You can contact me at ${data.email} if you have any questions
 
 `;
 }

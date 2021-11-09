@@ -1,11 +1,10 @@
-// TODO: Include packages needed for this application
+// Include packages needed for this application
 const fs = require('fs');
 const inq = require('inquirer');
 const playwright = require('playwright');
-//const generateReadme = require('./src/readmeGenerator');
 const generateMarkdown = require('./utils/generateMarkdown');
 
-// TODO: Create an array of questions for user input
+// Create an array of questions for user input
 const questions = [
     {
         type: 'input',
@@ -36,19 +35,19 @@ const questions = [
     {
         type: 'input',
         name: 'install',
-        message: 'Enter the installation instructions (default: "npm i"):',
+        message: 'Enter the installation instructions:',
         default: 'npm i'
     },
     {
         type: 'input',
         name: 'test',
-        message: 'Enter the test instructions (default: "npm test"):',
+        message: 'Enter the test instructions:',
         default: 'npm test'
     },
     {
         type: 'input',
         name: 'usage',
-        message: 'Enter the usage information::'
+        message: 'Enter the usage information:'
     },
     {
         type: 'input',
@@ -57,15 +56,15 @@ const questions = [
     },
     {
         type: 'input',
-        message: 'Enter the url for the live site:',
+        message: 'Enter the deployed URL for the live site:',
         name: 'uri'
     }
 ];
 
-// TODO: Create a function to write README file
+// Create a function to write README file
 const writeFile = data => {
     return new Promise((resolve, reject) => {
-        fs.writeFile('./dist/readme.md', data, err => {
+        fs.writeFile('./dist/README.md', data, err => {
             if (err) {
                 reject(err);
                 return;
@@ -81,49 +80,50 @@ const writeFile = data => {
 
 const createScreenCapture = async (uri) => {
     try {
-        const iPhone11 = playwright['iPhone 11 Pro'];
-        const chrome = await playwright.chromium.launch();
-        const chromePage = await chrome.newPage();
-        await chromePage.goto(uri);
-        await chromePage.screenshot({path: 'dist/chrome-page.png'});
-        const phone = await playwright.webkit.launch();
-        const context = await phone.newContext({
-            ...iPhone11,
-            isMobile: true,
-            viewport: {
-                width: 414,
-                height: 896
-            }
-        });
-        const phonePage = await context.newPage();
-        await phonePage.goto(uri);
-        await phonePage.screenshot({path: 'dist/phone-page.png'});
+        // Run parallel browser requests, wait until both complete
+        await Promise.all([
+            // Grab page screen shot using browser
+            (async()=>{
+                const chrome = await playwright.chromium.launch();
+                const chromePage = await chrome.newPage();
+                await chromePage.goto(uri);
+                await chromePage.screenshot({path: 'dist/images/chrome-page.png'});
+                await chrome.close();
+            })(),
+            // Grab page screen shot using mobile browser
+            (async()=>{
+                const iPhone11 = playwright['iPhone 11 Pro'];
+                const phone = await playwright.webkit.launch();
+                const context = await phone.newContext({
+                    ...iPhone11,
+                    isMobile: true,
+                    viewport: {
+                        width: 414,
+                        height: 896
+                    }
+                });
+                const phonePage = await context.newPage();
+                await phonePage.goto(uri);
+                await phonePage.screenshot({path: 'dist/images/phone-page.png'});
+                await phone.close();
+            })()
+        ]);
 
-        await chrome.close();
-        await phone.close();
+        return {browser:{path:'chrome-page.png'}, mobile:{path:'phone-page.png'}, uri:uri};
     } catch (err) {
-        console.log(err);
+        return err;
     }
 };
 
-// TODO: Create a function to initialize app
-function init() {
-    
-    createScreenCapture('https://tbellenger.github.io/playlist');
-
-
-    inq.prompt(questions)
-    .then(answers => {
-        console.log(answers);
-        return generateMarkdown(answers);
-    })
-    .then(markdown => {
-        console.log(markdown);
-        return writeFile(markdown);
-    })
-    .catch(err => {
+// Create a function to initialize app
+async function init() {
+    try {
+        let answers = await inq.prompt(questions);
+        createScreenCapture(answers.uri);
+        return await writeFile(await generateMarkdown(answers));
+    } catch (err) {
         console.log(err);
-    })
+    }
 }
 
 // Function call to initialize app
