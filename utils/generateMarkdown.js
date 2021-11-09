@@ -18,18 +18,25 @@ ${renderLicenseBadge(license)} ${renderLicenseLink(license)}
   `
 }
 
+function renderToc(data) {
+  let toc = '## Table of Contents\n';
+  if (data.install) toc += '[Installation](#installation)\n';
+  if (data.usage) toc += '[Usage](#usage)\n';
+  if (data.license) toc += '[License](#license)\n';
+  if (data.username) toc += '[Contributing](#contributing)\n';
+  if (data.tests) toc += '[Tests](#tests)\n';
+  if (data.questions) toc += '[Questions](#questions)\n';
+  return toc;
+}
+
 // TODO: Create a function to generate markdown for README
 function generateMarkdown(data) {
   return `# ${data.title}
 ${data.description}
 
 ## Table of Contents
-1. Installation
-2. Usage
-3. License
-4. Contributing
-5. Tests
-6. Questions
+${renderToc(data)}
+
 
 ## Installation
 ${data.install}
