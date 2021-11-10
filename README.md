@@ -18,6 +18,8 @@ npm i
 ## Usage
 Run the project by typing node index.js and follow the prompts
 
+### Video Link
+[Walkthrough Video](https://watch.screencastify.com/v/P2SWsAHfMB5XRiOkWMCF)
 
 ## License
 [MIT License](https://mit-license.org/)
