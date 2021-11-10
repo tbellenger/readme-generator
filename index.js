@@ -9,7 +9,15 @@ const questions = [
     {
         type: 'input',
         message: 'Please enter your email address:',
-        name: 'email'
+        name: 'email',
+        validate: (email) => {
+            // Regex mail check (return true if valid mail)
+            if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email)) {
+                return true;
+            } else {
+                return 'You should enter a valid email address';
+            }
+        }
     },
     {
         type: 'input',
@@ -47,7 +55,7 @@ const questions = [
     {
         type: 'input',
         name: 'usage',
-        message: 'Enter the usage information:'
+        message: 'Enter the information on how to use this project:'
     },
     {
         type: 'input',
@@ -57,7 +65,15 @@ const questions = [
     {
         type: 'input',
         message: 'Enter the deployed URL for the live site:',
-        name: 'uri'
+        name: 'uri',
+        validate: (uri) => {
+            if (!uri) { return true; }
+            if (/(ftp|https?):\/\/[^ "]+$/.test(uri)) {
+                return true;
+            } else {
+                return 'You should enter a valid URL';
+            }
+        }
     }
 ];
 
@@ -118,8 +134,17 @@ const createScreenCapture = async (uri) => {
 // Create a function to initialize app
 async function init() {
     try {
+        // create output directories
+        const dist = './dist';
+        const images = './dist/images/';
+        if (!fs.existsSync(dist)) {
+            fs.mkdirSync(dist);
+        }
+        if (!fs.existsSync(images)) {
+            fs.mkdirSync(images);
+        }
         const answers = await inq.prompt(questions);
-        createScreenCapture(answers.uri);
+        if (answers.uri) { createScreenCapture(answers.uri); }
         return await writeFile(await generateMarkdown(answers));
     } catch (err) {
         console.log(err);

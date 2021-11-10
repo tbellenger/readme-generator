@@ -1,10 +1,10 @@
-// TODO: Create a function that returns a license badge based on which license is passed in
+// Create a function that returns a license badge based on which license is passed in
 // If there is no license, return an empty string
 function renderLicenseBadge(license) {
   return `![License Badge](https://img.shields.io/badge/license-${license.replace(' License','')}-green)`;
 }
 
-// TODO: Create a function that returns the license link
+// Create a function that returns the license link
 // If there is no license, return an empty string
 function renderLicenseLink(license) {
   const short = license.split(' ')[0];
@@ -25,6 +25,7 @@ function renderLicenseSection(license) {
   `
 }
 
+// Render a section that displays the screenshots of the deployed site
 function renderScreenShotSection(uri) {
   if (!uri) return '';
   return `### Screenshots
@@ -36,19 +37,20 @@ function renderScreenShotSection(uri) {
   `
 }
 
+// Render the Table of Contents
 function renderToc(data) {
   let toc = '## Table of Contents\n';
   if (data.install) toc += '1. [Installation](#installation)\n';
   if (data.usage) toc += '1. [Usage](#usage)\n';
-  if (data.uri) toc += '   1. [Screenshot](#screenshot)\n'
+  if (data.uri) toc += '   1. [Screenshots](#screenshots)\n'
   if (data.license) toc += '1. [License](#license)\n';
   if (data.username) toc += '1. [Contributing](#contributing)\n';
-  if (data.tests) toc += '1. [Tests](#tests)\n';
-  if (data.questions) toc += '1. [Questions](#questions)\n';
+  if (data.test) toc += '1. [Tests](#tests)\n';
+  toc += '1. [Questions](#questions)\n';
   return toc;
 }
 
-// TODO: Create a function to generate markdown for README
+// Create a function to generate markdown for README
 function generateMarkdown(data) {
   return `# ${data.title}
 ${renderLicenseBadge(data.license)}
@@ -73,9 +75,9 @@ ${data.guidelines}
 ${data.test}
 
 ## Questions
-[Link to Github](${data.username})
+[Find me on Github](https://github.com/${data.username})
 
-You can contact me at ${data.email} if you have any questions
+Or you can contact me at ${data.email} if you have any questions
 
 `;
 }
